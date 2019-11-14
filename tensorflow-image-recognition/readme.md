@@ -26,6 +26,8 @@ A prebuilt TensorFlow CNN model is instantiated and used in a Kafka Streams appl
 
 ## **To Run the project**
 
+mvn clean package
+
 java -cp target/tensorflow-image-recognition-CP53_AK23-jar-with-dependencies.jar com.github.megachucky.kafka.streams.machinelearning.Kafka_Streams_TensorFlow_Image_Recognition_Example
 
 
