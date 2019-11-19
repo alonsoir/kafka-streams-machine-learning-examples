@@ -26,14 +26,69 @@ A prebuilt TensorFlow CNN model is instantiated and used in a Kafka Streams appl
 
 ## **To Run the project**
 
-  mvn clean package
+  # packaging jar file
 
-  Be sure about topics already exists!
-  
-  kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic ImageInputTopic
+	mvn clean package
 
-  kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic ImageOutputTopic
+# running project (in a terminal)
 
-  java -cp target/tensorflow-image-recognition-CP53_AK23-jar-with-dependencies.jar com.github.megachucky.kafka.streams.machinelearning.Kafka_Streams_TensorFlow_Image_Recognition_Example
+	java -cp target/tensorflow-image-recognition-CP53_AK23-jar-with-dependencies.jar com.github.megachucky.kafka.streams.machinelearning.Kafka_Streams_TensorFlow_Image_Recognition_Example
+
+# Run GRPC-TensorFlow-Server docker container
+
+	docker run -it -p 9000:9000 tgowda/inception_serving_tika
+
+	Inside the container, start the Tensorflow Serving server - this deploys the TensorFlow model for Image Recognition
+
+	root@8311ea4e8074:/# /serving/server.sh
+
+# Run Confluent platform (Kafka + Zookeeper)
+
+	confluent local start
+
+# CREATE necessary topics for  
+
+	kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic ImageInputTopic
+
+	kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic ImageOutputTopic
+
+# push some pictures to ImageInputTopic
+
+
+	echo -e "/Users/aironman/gitProjects/kafka-streams-machine-learning-examples/tensorflow-image-recognition/src/main/resources/TensorFlow_Images/trained_airplane_1.jpg" | kafkacat -b localhost:9092 -P -t ImageInputTopic
+
+
+	echo -e "/Users/aironman/gitProjects/kafka-streams-machine-learning-examples/tensorflow-image-recognition/src/main/resources/TensorFlow_Images/trained_airplane_2.jpg" | kafkacat -b localhost:9092 -P -t ImageInputTopic
+
+
+	echo -e "/Users/aironman/gitProjects/kafka-streams-machine-learning-examples/tensorflow-image-recognition/src/main/resources/TensorFlow_Images/trained_butterfly.jpg" | kafkacat -b localhost:9092 -P -t ImageInputTopic
+
+	echo -e "/Users/aironman/gitProjects/kafka-streams-machine-learning-examples/tensorflow-image-recognition/src/main/resources/TensorFlow_Images/new_airplane.jpg" | kafkacat -b localhost:9092 -P -t ImageInputTopic
+
+# consume predictions...
+
+    kafka-console-consumer --bootstrap-server localhost:9092 --topic ImageOutputTopic --from-beginning
+
+
+# or, in the running jar file terminal...
+
+	Last login: Tue Nov 19 12:25:55 on ttys006
+	aironman@MacBook-Pro-de-Alonso tensorflow-image-recognition % fish
+	Welcome to fish, the friendly interactive shell
+	aironman@MacBook-Pro-de-Alonso ~/g/k/tensorflow-image-recognition> java -cp target/tensorflow-image-recognition-CP53_AK23-jar-with-dependencies.jar com.github.megachucky.kafka.streams.machinelearning.Kafka_Streams_TensorFlow_Image_Recognition_Example
+	                                                                   
+	SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+	SLF4J: Defaulting to no-operation (NOP) logger implementation
+	SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+	Image Recognition Microservice is running...
+	Input to Kafka Topic ImageInputTopic; Output to Kafka Topic ImageOutputTopic
+	2019-11-19 12:37:44.005196: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+	2019-11-19 12:37:44.005228: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+	2019-11-19 12:37:44.005233: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
+	2019-11-19 12:37:44.005236: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
+	BEST MATCH: space shuttle (47,19% likely)
+	BEST MATCH: airliner (63,22% likely)
+	BEST MATCH: cabbage butterfly (26,23% likely)
+	BEST MATCH: airliner (54,36% likely)
 
 
