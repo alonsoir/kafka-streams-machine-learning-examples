@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>ai.h2o</groupId>
 			<artifactId>h2o-genmodel</artifactId>
-			<version>3.14.0.1</version>
+			<version>3.16.0.4</version>
 		</dependency>
        
 
